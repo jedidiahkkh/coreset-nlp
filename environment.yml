@@ -1,0 +1,16 @@
+name: diss
+channels:
+- conda-forge
+- pytorch
+dependencies:
+- accelerate
+- datasets
+- jupyterlab
+- numpy
+- pandas
+- python=3.8
+- pytorch
+- scikit-learn
+- torchaudio
+- torchvision
+- transformers
