@@ -11,6 +11,7 @@ from transformers import pipeline
 
 SEED = 1337
 
+
 def train():
     dataset = load_dataset("imdb")
 
@@ -58,7 +59,7 @@ def train():
     )
     print(f"Device in use: {args.device}")
     x = trainer.train()
-    print('==Training completed==')
+    print("==Training completed==")
     print(x)
 
     ## Testing inference
@@ -67,13 +68,16 @@ def train():
     classifier(text)
     with torch.no_grad():
         logits = model(**tokenizer(text, return_tensors="pt")).logits
-        print(logits.argmax().item())
+        answer = logits.argmax().item()
+        print(answer)
 
     ## Evaluation
-    print('==Begin evaluation==')
+    print("==Begin evaluation==")
     y = trainer.evaluate()
-    print('evaluation complete')
+    print("evaluation complete")
     print(y)
+
+    return answer
 
 
 if __name__ == "__main__":
