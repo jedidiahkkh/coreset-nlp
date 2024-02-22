@@ -11,6 +11,7 @@ dependencies:
 - python=3.8
 - pytorch
 - scikit-learn
+- submitit
 - torchaudio
 - torchvision
 - transformers
