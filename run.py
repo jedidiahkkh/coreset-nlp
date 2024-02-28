@@ -14,7 +14,10 @@ executor.update_parameters(
     gres="gpu:1",
     mail_type="ALL",
 )
-job = executor.submit(train)
+
+print(executor.cluster)
+
+job = executor.submit(train, reduced=executor.cluster != "local")
 print(job.job_id)
 
 output = job.result()

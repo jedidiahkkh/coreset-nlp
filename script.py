@@ -12,7 +12,9 @@ from transformers import pipeline
 SEED = 1337
 
 
-def train():
+def train(reduced: bool = False) -> int:
+    print(f"Working on reduced dataset: {reduced}", flush=True)
+
     dataset = load_dataset("imdb")
 
     model = AutoModelForSequenceClassification.from_pretrained(
@@ -29,6 +31,11 @@ def train():
         type="torch",
         columns=["input_ids", "token_type_ids", "attention_mask", "labels"],
     )
+
+    if reduced:
+        dataset = dataset.shuffle(SEED)
+        dataset["train"] = dataset["train"].select(range(10))
+        dataset["test"] = dataset["test"].select(range(10))
 
     def compute_metrics(p):
         pred, labels = p
@@ -53,8 +60,8 @@ def train():
     trainer = Trainer(
         model=model,
         args=args,
-        train_dataset=dataset["train"].shuffle(SEED).select(range(50)),
-        eval_dataset=dataset["test"].shuffle(SEED).select(range(50)),
+        train_dataset=dataset["train"],
+        eval_dataset=dataset["test"],
         compute_metrics=compute_metrics,
     )
     print(f"Device in use: {args.device}")
