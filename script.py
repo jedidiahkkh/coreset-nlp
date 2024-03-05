@@ -9,7 +9,9 @@ from datasets import load_dataset
 
 from transformers import pipeline, DataCollatorWithPadding
 
-from typing import Literal
+import DeepCore.deepcore.methods as methods
+
+from typing import Literal, Union
 import logging
 
 logger = logging.getLogger("submitit.training")
@@ -18,12 +20,14 @@ SEED = 1337
 
 Algo = Literal["bert-base-uncased", "roberta-base"]
 Dataset = Literal["snli"]
+Selection = Literal["uniform", "full"]
 
 
 def train(
     algo: Algo = "bert-base-uncased",
     dataset_name: Dataset = "snli",
     epochs: int = 3,
+    selection: str = "full",
     reduced: bool = False,
 ) -> int:
 
