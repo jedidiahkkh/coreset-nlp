@@ -1,6 +1,14 @@
+import logging
+
 from script import train
 
 import submitit
+
+logging.basicConfig(
+    format="%(levelname)s:%(name)s:%(asctime)s - %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger()
 
 log_folder = "output_logs/%j"
 executor = submitit.AutoExecutor(folder=log_folder)
@@ -15,10 +23,10 @@ executor.update_parameters(
     mail_type="ALL",
 )
 
-print(executor.cluster)
+logger.info(f"Executing on {executor.cluster}")
 
-job = executor.submit(train, reduced=executor.cluster != "local")
-print(job.job_id)
+job = executor.submit(train, reduced=executor.cluster != "slurm")
+logger.info("Job submitted with job id %s", job.job_id)
 
 output = job.result()
-print(output)
+logger.info(f"Output: {output}")
