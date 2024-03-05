@@ -1,0 +1,3 @@
+[submodule "DeepCore"]
+	path = DeepCore
+	url = git@github.com:PatrickZH/DeepCore.git
