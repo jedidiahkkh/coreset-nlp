@@ -13,7 +13,7 @@ logger = logging.getLogger()
 log_folder = "output_logs/%j"
 executor = submitit.AutoExecutor(folder=log_folder)
 executor.update_parameters(
-    timeout_min=20,
+    timeout_min=12 * 60,
     job_name="part-iii",
     slurm_partition="ampere",
     account="COMPUTERLAB-SL3-GPU",
