@@ -18,11 +18,21 @@ logger = logging.getLogger("submitit.training")
 
 SEED = 1337
 
-Algo = Literal["bert-base-uncased", "roberta-base"]
+Model = Literal["bert-base-uncased", "roberta-base"]
 Dataset = Literal["snli"]
 Selection = Literal["uniform", "full"]
 
-default_selection_args = dict(
+
+class Args:
+    def __init__(self, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+default_selection_args = Args(
     selection_epochs=40,
     selection_momentum=0.9,
     selection_weight_decay=5e-4,
@@ -42,7 +52,7 @@ unknown_args = dict(
 
 
 def train(
-    algo: Algo = "bert-base-uncased",
+    model_name: Model = "bert-base-uncased",
     dataset_name: Dataset = "snli",
     epochs: int = 3,
     selection: str = "Uniform",
@@ -52,7 +62,7 @@ def train(
     logger.info(
         "Args received %s",
         {
-            "algo": algo,
+            "model_name": model_name,
             "dataset_name": dataset_name,
             "epochs": epochs,
             "selection": selection,
@@ -60,10 +70,17 @@ def train(
             "reduced": reduced,
         },
     )
+    user_args = Args(**vars(default_selection_args))
+    user_args.model = model_name
+    user_args.dataset = dataset_name
+    user_args.epochs = epochs
+    user_args.selection = selection
+    user_args.fraction = fraction
+    user_args.reduced = reduced
 
     dataset = load_dataset(dataset_name)
-    model = AutoModelForSequenceClassification.from_pretrained(algo, num_labels=3)
-    tokenizer = AutoTokenizer.from_pretrained(algo)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=3)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     if reduced:
         dataset = dataset.shuffle(SEED)
@@ -122,7 +139,7 @@ def train(
     )
     method = methods.__dict__[selection](
         dataset["train"],
-        default_selection_args,
+        user_args,
         fraction,
         SEED,
         **selection_args,
